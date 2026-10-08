@@ -1,23 +1,42 @@
 {
- "title": "Kinesiology: Muscle & Motor Development",
+  "title": "Kinesiology: Muscle & Motor Development",
   "instructions": "Match each term with its correct definition. You may drag terms, tap a term and then tap a target, or use the accessible dropdown mode.",
   "items": [
-  {
-    "Term\tDefinition": "Term  1\tDefinition 1"
-  },
-  {
-    "Term\tDefinition": "Term  2\tDefinition 2"
-  },
-  {
-    "Term\tDefinition": "Term  3\tDefinition 3"
-  },
-  {
-    "Term\tDefinition": "Term  4\tDefinition 4"
-  },
-  {
-    "Term\tDefinition": "Term  5\tDefinition 5"
-  },
-  {
-    "Term\tDefinition": "Term  6\tDefinition 6"
-  }
-]
+    {
+      "term": "Fox",
+      "definition": "The quick brown ______ jumped over the lazy sheep dog."
+    },
+    {
+      "term": "quick",
+      "definition": "The ______ brown fox jumped over the lazy sheep dog."
+    },
+    {
+      "term": "brown",
+      "definition": "The quick ______ fox jumped over the lazy sheep dog."
+    },
+    {
+      "term": "jumped",
+      "definition": "The quick brown fox ______ over the lazy sheep dog."
+    },
+    {
+      "term": "over",
+      "definition": "The quick brown fox jumped ______ the lazy sheep dog."
+    },
+    {
+      "term": "lazy",
+      "definition": "The quick brown fox jumped over the ______ sheep dog."
+    },
+    {
+      "term": "sheep",
+      "definition": "The quick brown fox jumped over the lazy ______ dog."
+    },
+    {
+      "term": "dog",
+      "definition": "The quick brown fox jumped over the lazy sheep ______."
+    },
+   {
+      "term": "Stross",
+      "definition": "is the BOSS!!"
+    }
+  ]
+}
