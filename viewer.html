@@ -589,11 +589,12 @@
       .replaceAll("'", "&#039;");
   }
 
-  function termId(term) {
-    return "term-" + term
+ function termId(term, index) {
+    const clean = String(term || "")
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+    return "term-" + (clean || "item") + "-" + index;
   }
 
   function updateCounter() {
@@ -727,45 +728,62 @@
     renderDragInterface();
   }
 
-  function renderSelectInterface() {
+ function renderSelectInterface() {
     selectRows.innerHTML = "";
 
-    shuffledData.forEach(item => {
+    // Safely collect all terms, filtering out any accidental nulls/undefined
+    const termList = DATA
+      .map(item => item.term || item.Term || "")
+      .filter(t => t.trim() !== "");
+
+    shuffledData.forEach((item, index) => {
+      const term = item.term || item.Term || "";
+      const definition = item.definition || item.Definition || "";
+
       const row = document.createElement("div");
       row.className = "select-row";
 
       const label = document.createElement("div");
       label.className = "select-definition";
-      label.id = "definition-" + termId(item.term);
-      label.textContent = item.definition;
+      label.id = termId(term, index);
+      label.textContent = definition;
 
       const select = document.createElement("select");
       select.setAttribute("aria-labelledby", label.id);
-      select.dataset.target = item.term;
+      select.dataset.target = term;
 
       const placeholder = document.createElement("option");
       placeholder.value = "";
       placeholder.textContent = "Select a term...";
       select.appendChild(placeholder);
 
-      shuffle(DATA.map(d => d.term)).forEach(term => {
+      // Populate options with randomized terms
+      shuffle(termList).forEach(t => {
         const option = document.createElement("option");
-        option.value = term;
-        option.textContent = term;
-        if (placements[item.term] === term) option.selected = true;
+        option.value = t;
+        option.textContent = t;
+
+        if (placements[term] === t) {
+          option.selected = true;
+        }
+
         select.appendChild(option);
       });
 
       select.addEventListener("change", () => {
         const selected = select.value;
+
+        // Remove this term from any previous target assignment
         Object.keys(placements).forEach(key => {
-          if (placements[key] === selected) delete placements[key];
+          if (placements[key] === selected) {
+            delete placements[key];
+          }
         });
 
         if (selected) {
-          placements[item.term] = selected;
+          placements[term] = selected;
         } else {
-          delete placements[item.term];
+          delete placements[term];
         }
 
         clearValidation();
