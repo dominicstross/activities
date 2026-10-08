@@ -737,12 +737,12 @@
  function renderSelectInterface() {
     selectRows.innerHTML = "";
 
-    // Safely collect all terms, filtering out any accidental nulls/undefined
     const termList = DATA
       .map(item => item.term || item.Term || "")
       .filter(t => t.trim() !== "");
 
-    shuffledData.forEach((item, index) => {
+    // Notice we use shuffledDefinitions here instead of shuffledData
+    shuffledDefinitions.forEach((item, index) => {
       const term = item.term || item.Term || "";
       const definition = item.definition || item.Definition || "";
 
@@ -779,7 +779,6 @@
       select.addEventListener("change", () => {
         const selected = select.value;
 
-        // Remove this term from any previous target assignment
         Object.keys(placements).forEach(key => {
           if (placements[key] === selected) {
             delete placements[key];
@@ -810,11 +809,14 @@
     let score = 0;
     const incorrect = [];
 
-    shuffledData.forEach(item => {
-      const assigned = placements[item.term];
-      const target = document.querySelector(`.target[data-term="${CSS.escape(item.term)}"]`);
+    // Notice we iterate through shuffledDefinitions here as well
+    shuffledDefinitions.forEach(item => {
+      const term = item.term || item.Term || "";
+      const definition = item.definition || item.Definition || "";
+      const assigned = placements[term];
+      const target = document.querySelector(`.target[data-term="${CSS.escape(term)}"]`);
 
-      if (assigned === item.term) {
+      if (assigned === term) {
         score++;
         if (target) {
           target.classList.add("correct");
@@ -827,14 +829,14 @@
           const status = target.querySelector(".status");
           if (status) {
             status.textContent = assigned
-              ? "✗ Incorrect — correct answer: " + item.term
-              : "✗ Not answered — correct answer: " + item.term;
+              ? "✗ Incorrect — correct answer: " + term
+              : "✗ Not answered — correct answer: " + term;
           }
         }
         incorrect.push({
-          definition: item.definition,
+          definition: definition,
           assigned: assigned || "No answer",
-          correct: item.term
+          correct: term
         });
       }
     });
