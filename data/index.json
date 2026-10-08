@@ -1,6 +1,6 @@
 [
   { "id": "ch01", "title": "Title 1", "file": "data/kinesiology-ch1.json" },
   { "id": "ch02", "title": "Title 2", "file": "data/ch02.json" },
-  { "id": "ch03", "title": "Title 3", "file": "data/ch03.json" }
+  { "id": "ch03", "title": "Title 3", "file": "data/ch03.json" },
   { "id": "ch04", "title": "Title 4", "file": "data/ch04.json" }
 ]
