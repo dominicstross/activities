@@ -2,49 +2,29 @@
   "title": "Kinesiology: Muscle & Motor Development",
   "instructions": "Match each term with its correct definition. You may drag terms, tap a term and then tap a target, or use the accessible dropdown mode.",
   "items": [
-  {
-    "term": 1,
-    "definition": "one"
-  },
-  {
-    "term": 2,
-    "definition": "two"
-  },
-  {
-    "term": 3,
-    "definition": "three"
-  },
-  {
+    {
+      "term": 1,
+      "definition": "one"
+    },
+    {
+      "term": 2,
+      "definition": "two"
+    },
+    {
+      "term": 3,
+     "definition": "three"
+    },
+    {
     "term": 4,
     "definition": "four"
-  },
-  {
+    },
+    {
     "term": 5,
     "definition": "five"
-  },
-  {
-    "term": 6,
-    "definition": "Six"
-  },
-  {
-    "term": 7,
-    "definition": "seven"
-  },
-  {
-    "term": 8,
-    "definition": "eight"
-  },
-  {
-    "term": 9,
-    "definition": "nine"
-  },
-  {
-    "term": 10,
-    "definition": "ten"
-  },
-  {
+    },
+    {
     "term": "Stross",
     "definition": "is the BOSS!!"
-  }
-]
+    }
+  ]
   }
