@@ -427,9 +427,7 @@
     Select Unit / Topic:
   </label>
   <select id="activitySelect" style="max-width: 320px; display: inline-block;">
-    <option value="data/kinesiology-ch1.json">Muscle & Motor Development</option>
-    <option value="data/biomechanics.json">Biomechanics & Movement</option>
-    <option value="data/motor-learning.json">Motor Learning & Control</option>
+   <option value="">Loading activities...</option> 
   </select>
 </div>
     <div class="mode-row" role="group" aria-label="Interaction mode">
@@ -856,13 +854,7 @@
 
  const activitySelect = document.getElementById("activitySelect");
 
-  function getDataSource() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("src")) return params.get("src");
-    if (params.get("activity")) return `data/${params.get("activity")}.json`;
-    return activitySelect ? activitySelect.value : "data/kinesiology-ch1.json";
-  }
-
+  // Load and render an individual activity file
   async function loadActivity(dataSource) {
     loadingNotice.style.display = "block";
     loadingNotice.classList.remove("error");
@@ -899,57 +891,58 @@
     }
   }
 
-  // Handle dropdown change event
-  if (activitySelect) {
-    activitySelect.addEventListener("change", (e) => {
-      loadActivity(e.target.value);
-    });
-  }
+  // Populate the dropdown from data/index.json and load the initial activity
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const urlActivity = params.get("activity");
+    const urlSrc = params.get("src");
 
-  function init() {
-    const initialSource = getDataSource();
-    
-    // Sync dropdown with URL parameter if present
-    if (activitySelect) {
-      const matchingOption = Array.from(activitySelect.options).find(
-        opt => opt.value === initialSource || opt.value === `data/${initialSource}.json`
-      );
-      if (matchingOption) activitySelect.value = matchingOption.value;
+    let activitiesList = [];
+
+    // 1. Fetch the list of available activity files
+    try {
+      const indexRes = await fetch("data/index.json");
+      if (indexRes.ok) {
+        activitiesList = await indexRes.json();
+      }
+    } catch (e) {
+      console.warn("Could not load data/index.json. Falling back to defaults.", e);
+    }
+
+    // 2. Populate the dropdown menu
+    if (activitySelect && activitiesList.length > 0) {
+      activitySelect.innerHTML = "";
+      activitiesList.forEach(act => {
+        const opt = document.createElement("option");
+        opt.value = act.file;
+        opt.textContent = act.title;
+        opt.dataset.id = act.id;
+        activitySelect.appendChild(opt);
+      });
+
+      activitySelect.addEventListener("change", (e) => {
+        loadActivity(e.target.value);
+      });
+    }
+
+    // 3. Determine which file to load first:
+    // Priority: ?src= -> ?activity= -> first entry in index.json -> fallback
+    let initialSource = "data/kinesiology-ch1.json";
+
+    if (urlSrc) {
+      initialSource = urlSrc;
+    } else if (urlActivity) {
+      initialSource = `data/${urlActivity}.json`;
+      if (activitySelect) {
+        const match = Array.from(activitySelect.options).find(o => o.dataset.id === urlActivity);
+        if (match) activitySelect.value = match.value;
+      }
+    } else if (activitiesList.length > 0) {
+      initialSource = activitiesList[0].file;
+      if (activitySelect) activitySelect.value = initialSource;
     }
 
     loadActivity(initialSource);
-  }
-  async function init() {
-    const dataSource = getDataSource();
-
-    try {
-      const response = await fetch(dataSource);
-      if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-      const payload = await response.json();
-
-      DATA = payload.items || [];
-      total = DATA.length;
-
-      if (total === 0) throw new Error("No matching terms found in dataset.");
-
-      activityTitle.textContent = payload.title || "Matching Activity";
-      document.title = payload.title || "Matching Activity";
-      if (payload.instructions) {
-        activityInstructions.textContent = payload.instructions;
-      }
-
-      totalCount.textContent = total;
-      loadingNotice.style.display = "none";
-      contentContainer.style.display = "block";
-
-      resetActivity();
-    } catch (err) {
-      loadingNotice.classList.add("error");
-      loadingNotice.innerHTML = `
-        <strong>Error loading activity data:</strong> ${escapeHTML(err.message)}<br>
-        <small style="margin-top:8px; display:block;">Target file: <code>${escapeHTML(dataSource)}</code></small>
-      `;
-    }
   }
 
   document.getElementById("checkButton").addEventListener("click", checkAnswers);
