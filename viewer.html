@@ -422,7 +422,16 @@
     <p id="activity-instructions" class="instructions">
       Match each term with its correct definition.
     </p>
-
+<div class="activity-picker-row" style="margin-top: 14px;">
+  <label for="activitySelect" style="font-weight: 700; color: var(--navy); margin-right: 8px;">
+    Select Unit / Topic:
+  </label>
+  <select id="activitySelect" style="max-width: 320px; display: inline-block;">
+    <option value="data/kinesiology-ch1.json">Muscle & Motor Development</option>
+    <option value="data/biomechanics.json">Biomechanics & Movement</option>
+    <option value="data/motor-learning.json">Motor Learning & Control</option>
+  </select>
+</div>
     <div class="mode-row" role="group" aria-label="Interaction mode">
       <span class="mode-label">Interaction:</span>
 
@@ -845,13 +854,71 @@
     updateCounter();
   }
 
+ const activitySelect = document.getElementById("activitySelect");
+
   function getDataSource() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("src")) return params.get("src");
     if (params.get("activity")) return `data/${params.get("activity")}.json`;
-    return "data/kinesiology-ch1.json";
+    return activitySelect ? activitySelect.value : "data/kinesiology-ch1.json";
   }
 
+  async function loadActivity(dataSource) {
+    loadingNotice.style.display = "block";
+    loadingNotice.classList.remove("error");
+    loadingNotice.textContent = "Loading activity data...";
+    contentContainer.style.display = "none";
+
+    try {
+      const response = await fetch(dataSource);
+      if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+      const payload = await response.json();
+
+      DATA = payload.items || [];
+      total = DATA.length;
+
+      if (total === 0) throw new Error("No matching terms found in dataset.");
+
+      activityTitle.textContent = payload.title || "Matching Activity";
+      document.title = payload.title || "Matching Activity";
+      if (payload.instructions) {
+        activityInstructions.textContent = payload.instructions;
+      }
+
+      totalCount.textContent = total;
+      loadingNotice.style.display = "none";
+      contentContainer.style.display = "block";
+
+      resetActivity();
+    } catch (err) {
+      loadingNotice.classList.add("error");
+      loadingNotice.innerHTML = `
+        <strong>Error loading activity data:</strong> ${escapeHTML(err.message)}<br>
+        <small style="margin-top:8px; display:block;">Target file: <code>${escapeHTML(dataSource)}</code></small>
+      `;
+    }
+  }
+
+  // Handle dropdown change event
+  if (activitySelect) {
+    activitySelect.addEventListener("change", (e) => {
+      loadActivity(e.target.value);
+    });
+  }
+
+  function init() {
+    const initialSource = getDataSource();
+    
+    // Sync dropdown with URL parameter if present
+    if (activitySelect) {
+      const matchingOption = Array.from(activitySelect.options).find(
+        opt => opt.value === initialSource || opt.value === `data/${initialSource}.json`
+      );
+      if (matchingOption) activitySelect.value = matchingOption.value;
+    }
+
+    loadActivity(initialSource);
+  }
   async function init() {
     const dataSource = getDataSource();
 
