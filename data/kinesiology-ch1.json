@@ -1,0 +1,51 @@
+{
+  "title": "Kinesiology: Muscle & Motor Development",
+  "instructions": "Match each term with its correct definition. You may drag terms, tap a term and then tap a target, or use the accessible dropdown mode.",
+  "items": [
+    {
+      "term": "Hypertrophy",
+      "definition": "An increase in the size of existing muscle fibers through the accumulation of myofilaments and myofibrils."
+    },
+    {
+      "term": "Hyperplasia",
+      "definition": "An increase in the total number of individual muscle fibers."
+    },
+    {
+      "term": "Sarcomere",
+      "definition": "The basic functional contractile unit of myofibrils, added longitudinally at the muscle-tendon junction during growth."
+    },
+    {
+      "term": "Myelination",
+      "definition": "The development of a myelin sheath around nerve fibers, essential for rapid electrical conduction and motor skill execution."
+    },
+    {
+      "term": "Testosterone",
+      "definition": "A primary male androgenic hormone responsible for pubertal muscle mass expansion and bone growth."
+    },
+    {
+      "term": "Adipocyte",
+      "definition": "A specialized cell dedicated to the synthesis and storage of fat mass."
+    },
+    {
+      "term": "Muscle-Tendon Junction",
+      "definition": "The anatomical region where muscle fibers attach to tendon tissue, serving as the site for longitudinal sarcomere addition during growth."
+    },
+    {
+      "term": "Fat-Free Mass",
+      "definition": "The total body mass composed of non-fat components, including skeletal muscle, bone, organs, and water."
+    },
+    {
+      "term": "Cerebral Cortex",
+      "definition": "The outer layer of neural tissue in the brain involved in higher-level motor control, perception, and cognition."
+    },
+   {
+      "term": "Stros",
+      "definition": "is the BOSS!!"
+    },
+
+    {
+      "term": "Motor Impulse Conduction",
+      "definition": "The propagation of electrical action potentials along nerve axons to stimulate muscle contraction."
+    }
+  ]
+}
