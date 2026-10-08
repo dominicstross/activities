@@ -2,30 +2,49 @@
   "title": "Kinesiology: Muscle & Motor Development",
   "instructions": "Match each term with its correct definition. You may drag terms, tap a term and then tap a target, or use the accessible dropdown mode.",
   "items": [
-    {
-      "term": "Term 1",
-      "definition": "Definition 1"
-    },
-    {
-      "term": "Term 2",
-      "definition": "Definition 2"
-    },
-    {
-      "term": "term 3",
-      "definition": "definition 3"
-    },
-    {
-      "term": "Term 4",
-      "definition": "Drfiniton 4"
-    },
-    {
-      "term": "term 5",
-      "definition": "definition 5"
-    },
-    {
-      "term": "Stross",
-      "definition": "is the BOSS!!"
-    },
-    }
-  ]
+  {
+    "term": "Hypertrophy",
+    "definition": "Swole"
+  },
+  {
+    "term": "Hyperplasia",
+    "definition": "Splitting"
+  },
+  {
+    "term": "Sarcomere",
+    "definition": "basic contraction unit"
+  },
+  {
+    "term": "Myelination",
+    "definition": "development of the sheeth"
+  },
+  {
+    "term": "Testosterone",
+    "definition": "t bag"
+  },
+  {
+    "term": "Adipocyte",
+    "definition": "FAT"
+  },
+  {
+    "term": "Muscle-Tendon Junction",
+    "definition": "The anatomical region where muscle fibers attach to tendon tissue, serving as the site for longitudinal sarcomere addition during growth."
+  },
+  {
+    "term": "Fat-Free Mass",
+    "definition": "Shredded"
+  },
+  {
+    "term": "Domo Ori Got Toe",
+    "definition": "Thank you very much o"
+  },
+  {
+    "term": "Stross",
+    "definition": "is the BOSS!!"
+  },
+  {
+    "term": "Action Potential",
+    "definition": "The propagation of electrical action potentials along nerve axons to stimulate muscle contraction."
+  }
+]
 }
