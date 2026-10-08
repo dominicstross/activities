@@ -545,7 +545,8 @@
 
   let DATA = [];
   let total = 0;
-  let shuffledData = [];
+ let shuffledTerms = [];
+  let shuffledDefinitions = [];
   let placements = {};
   let selectedTerm = null;
   let currentMode = "drag";
@@ -622,28 +623,33 @@
 
     const assignedTerms = new Set(Object.values(placements));
 
-    shuffledData.forEach(item => {
-      if (!assignedTerms.has(item.term)) {
-        const chip = createTermChip(item.term);
+    // 1. Render Term Bank from the independently shuffled terms list
+    shuffledTerms.forEach(term => {
+      if (term && !assignedTerms.has(term)) {
+        const chip = createTermChip(term);
         termBank.appendChild(chip);
       }
     });
 
-    shuffledData.forEach(item => {
+    // 2. Render Target Cards from the independently shuffled definitions list
+    shuffledDefinitions.forEach(item => {
+      const term = item.term || item.Term || "";
+      const definition = item.definition || item.Definition || "";
+
       const target = document.createElement("article");
       target.className = "target";
-      target.dataset.term = item.term;
+      target.dataset.term = term;
       target.tabIndex = 0;
-      target.setAttribute("aria-label", "Definition: " + item.definition);
+      target.setAttribute("aria-label", "Definition: " + definition);
 
       target.innerHTML = `
-        <div class="target-title">${escapeHTML(item.definition)}</div>
+        <div class="target-title">${escapeHTML(definition)}</div>
         <div class="assigned"></div>
         <div class="placeholder">Drop or assign a term here.</div>
         <div class="status" aria-live="polite"></div>
       `;
 
-      const assignedTerm = placements[item.term];
+      const assignedTerm = placements[term];
       if (assignedTerm) {
         const assignedContainer = target.querySelector(".assigned");
         assignedContainer.appendChild(createTermChip(assignedTerm));
@@ -662,19 +668,19 @@
       target.addEventListener("drop", event => {
         event.preventDefault();
         target.classList.remove("drag-over");
-        const term = event.dataTransfer.getData("text/plain");
-        if (term) assignTerm(term, item.term);
+        const droppedTerm = event.dataTransfer.getData("text/plain");
+        if (droppedTerm) assignTerm(droppedTerm, term);
       });
 
       target.addEventListener("click", event => {
         if (event.target.closest(".term-chip")) return;
-        if (selectedTerm) assignTerm(selectedTerm, item.term);
+        if (selectedTerm) assignTerm(selectedTerm, term);
       });
 
       target.addEventListener("keydown", event => {
         if ((event.key === "Enter" || event.key === " ") && selectedTerm) {
           event.preventDefault();
-          assignTerm(selectedTerm, item.term);
+          assignTerm(selectedTerm, term);
         }
       });
 
@@ -890,7 +896,10 @@
   }
 
   function resetActivity() {
-    shuffledData = shuffle(DATA);
+    // Shuffle terms and definitions independently so they never mirror each other
+    shuffledTerms = shuffle(DATA.map(item => item.term || item.Term || ""));
+    shuffledDefinitions = shuffle([...DATA]);
+
     placements = {};
     selectedTerm = null;
     feedback.classList.remove("visible");
