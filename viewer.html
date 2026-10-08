@@ -62,12 +62,41 @@
     color: var(--gray-500);
   }
 
+  .picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px;
+    background: var(--gray-100);
+    border-radius: 8px;
+  }
+
+  .picker-label {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 0.95rem;
+  }
+
+  .activity-dropdown {
+    flex: 1;
+    min-width: 240px;
+    padding: 8px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    background: var(--white);
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--navy);
+  }
+
   .mode-row {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    margin-top: 18px;
+    margin-top: 16px;
   }
 
   .mode-label {
@@ -387,25 +416,16 @@
     body {
       padding: 12px;
     }
-
-    .layout {
+    .layout, .select-row {
       grid-template-columns: 1fr;
     }
-
-    .select-row {
-      grid-template-columns: 1fr;
-    }
-
-    .header,
-    .panel {
+    .header, .panel {
       padding: 15px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
       transition: none !important;
     }
   }
@@ -422,24 +442,20 @@
     <p id="activity-instructions" class="instructions">
       Match each term with its correct definition.
     </p>
-<div class="activity-picker-row" style="margin-top: 14px;">
-  <label for="activitySelect" style="font-weight: 700; color: var(--navy); margin-right: 8px;">
-    Select Unit / Topic:
-  </label>
-  <select id="activitySelect" style="max-width: 320px; display: inline-block;">
-   <option value="">Loading activities...</option> 
-  </select>
-</div>
+
+    <!-- Activity Selector Dropdown -->
+    <div class="picker-row">
+      <label for="activitySelect" class="picker-label">Select Activity / Topic:</label>
+      <select id="activitySelect" class="activity-dropdown" aria-label="Select Activity">
+        <option value="">Loading list...</option>
+      </select>
+    </div>
+
+    <!-- Mode Selector -->
     <div class="mode-row" role="group" aria-label="Interaction mode">
       <span class="mode-label">Interaction:</span>
-
-      <button type="button" class="mode-button active" id="dragModeButton">
-        Drag / Tap
-      </button>
-
-      <button type="button" class="mode-button" id="selectModeButton">
-        Dropdown
-      </button>
+      <button type="button" class="mode-button active" id="dragModeButton">Drag / Tap</button>
+      <button type="button" class="mode-button" id="selectModeButton">Dropdown</button>
     </div>
 
     <div class="instructions-box">
@@ -515,6 +531,17 @@
 (() => {
   "use strict";
 
+  /* ============================================================
+     LOCAL REGISTRY CONFIGURATION
+     Edit or add entries here so the dropdown always has options,
+     even when run offline without a local server.
+     ============================================================ */
+  const LOCAL_ACTIVITY_REGISTRY = [
+    { id: "kinesiology-ch1", title: "Muscle & Motor Development", file: "data/kinesiology-ch1.json" },
+    { id: "biomechanics", title: "Biomechanics & Levers", file: "data/biomechanics.json" },
+    { id: "cardiorespiratory", title: "Cardiorespiratory Physiology", file: "data/cardiorespiratory.json" }
+  ];
+
   let DATA = [];
   let total = 0;
   let shuffledData = [];
@@ -522,6 +549,7 @@
   let selectedTerm = null;
   let currentMode = "drag";
 
+  const activitySelect = document.getElementById("activitySelect");
   const termBank = document.getElementById("termBank");
   const targets = document.getElementById("targets");
   const selectRows = document.getElementById("selectRows");
@@ -852,9 +880,6 @@
     updateCounter();
   }
 
- const activitySelect = document.getElementById("activitySelect");
-
-  // Load and render an individual activity file
   async function loadActivity(dataSource) {
     loadingNotice.style.display = "block";
     loadingNotice.classList.remove("error");
@@ -873,9 +898,7 @@
 
       activityTitle.textContent = payload.title || "Matching Activity";
       document.title = payload.title || "Matching Activity";
-      if (payload.instructions) {
-        activityInstructions.textContent = payload.instructions;
-      }
+      activityInstructions.textContent = payload.instructions || "Match each term with its correct definition.";
 
       totalCount.textContent = total;
       loadingNotice.style.display = "none";
@@ -887,11 +910,11 @@
       loadingNotice.innerHTML = `
         <strong>Error loading activity data:</strong> ${escapeHTML(err.message)}<br>
         <small style="margin-top:8px; display:block;">Target file: <code>${escapeHTML(dataSource)}</code></small>
+        <p style="margin-top:8px; font-size:0.85rem;">Note: If testing locally from your desktop, ensure a local server is running (e.g. VS Code Live Server).</p>
       `;
     }
   }
 
-  // Populate the dropdown from data/index.json and load the initial activity
   async function init() {
     const params = new URLSearchParams(window.location.search);
     const urlActivity = params.get("activity");
@@ -899,17 +922,20 @@
 
     let activitiesList = [];
 
-    // 1. Fetch the list of available activity files
+    // Attempt to fetch index.json (useful when hosted on LMS or web server)
     try {
       const indexRes = await fetch("data/index.json");
       if (indexRes.ok) {
         activitiesList = await indexRes.json();
+      } else {
+        throw new Error();
       }
     } catch (e) {
-      console.warn("Could not load data/index.json. Falling back to defaults.", e);
+      // Fallback kicks in immediately if index.json is blocked or missing
+      activitiesList = LOCAL_ACTIVITY_REGISTRY;
     }
 
-    // 2. Populate the dropdown menu
+    // Populate dropdown options
     if (activitySelect && activitiesList.length > 0) {
       activitySelect.innerHTML = "";
       activitiesList.forEach(act => {
@@ -925,9 +951,8 @@
       });
     }
 
-    // 3. Determine which file to load first:
-    // Priority: ?src= -> ?activity= -> first entry in index.json -> fallback
-    let initialSource = "data/kinesiology-ch1.json";
+    // Determine initial activity to load
+    let initialSource = activitiesList.length > 0 ? activitiesList[0].file : "data/kinesiology-ch1.json";
 
     if (urlSrc) {
       initialSource = urlSrc;
@@ -937,9 +962,8 @@
         const match = Array.from(activitySelect.options).find(o => o.dataset.id === urlActivity);
         if (match) activitySelect.value = match.value;
       }
-    } else if (activitiesList.length > 0) {
-      initialSource = activitiesList[0].file;
-      if (activitySelect) activitySelect.value = initialSource;
+    } else if (activitySelect && activitySelect.value) {
+      initialSource = activitySelect.value;
     }
 
     loadActivity(initialSource);
